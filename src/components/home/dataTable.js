@@ -10,7 +10,17 @@ const TableRow = (props) =>{
 	const supervisor = employee[3];
 
 	const deleteEmp = ()=>{
-		const dURL = 'localhost:8080/HouseCoffee/delete_emp'
+		const dURL = 'http://localhost:8080/HouseCoffee/delete_emp?id='
+		const request = axios({
+			method:'DELETE',
+			url: `${dURL}"${id}"`
+		}).then((res)=>{
+				console.log(res);
+				refreshData();
+			})
+			.catach((err)=>{
+				console.log(err);
+			})
 	};
 
 	return(
@@ -20,7 +30,7 @@ const TableRow = (props) =>{
 			<td>{supervisor}</td>
 			<td>{phone}</td>
 			<td>
-				<Button className='btn-danger'>
+				<Button className='btn-danger' onClick={deleteEmp}>
 					Delete
 				</Button>
 			</td>
