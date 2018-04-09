@@ -1,8 +1,10 @@
 import React from 'react';
 
+import Main from './main';
+
 const App = () => (
     <div>
-        <h1>react starter</h1>
+        <Main />
     </div>
 );
 
