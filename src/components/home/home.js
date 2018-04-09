@@ -2,11 +2,17 @@ import React, {Component} from 'react';
 import axios from 'axios';
 import {PageHeader, Table} from 'react-bootstrap';
 
+import DataTable from './dataTable';
+
 class Home extends Component{
 	constructor(props){
 		super(props);
-		this.state={};
+		this.state={
+			empData : null
+		};
 		this.getEmployeeData = this.getEmployeeData.bind(this);
+		this.dataConvert = this.dataConvert.bind(this);
+		this.setDataState = this.setDataState.bind(this);
 	}
 
 	componentDidMount(){
@@ -17,19 +23,36 @@ class Home extends Component{
 		const apiURL = 'http://localhost:8080/HouseCoffee/get_all';
 		const request = axios.get(apiURL)
 			.then((res)=>{
-				const dataStr = res.data;
-				const qChange = dataStr.replace(/'/g,'"');
-				const dataArr = JSON.parse(qChange);
-				
-				console.log(dataArr, typeof dataArr);
+				// const dataStr = res.data;
+				// const qChange = dataStr.replace(/'/g,'"');
+				// const dataArr = JSON.parse(qChange);
+				const dataArr = this.dataConvert(res.data);
+				this.setDataState(dataArr);
+				// console.log(dataArr, typeof dataArr);
 			})
 			.catch((err)=>{
 				console.log(err);
 			});
 	}
+	dataConvert(data){
+		const dataStr = data;
+		const qChange = dataStr.replace(/'/g,'"');
+		const dataArr = JSON.parse(qChange);
+		return dataArr;
+	}
+	setDataState(data){
+		this.setState({
+			empData: data
+		});
+	}
 
 	render(){
-		
+		const dataArr = this.state.empData;
+		// console.log(dataArr);
+		const tableRows = dataArr ? dataArr.map((emp, index)=>{
+			return <DataTable key={index} index={index} employee={emp} refreshData={this.getEmployeeData} />
+		}):<tr></tr>;
+
 		return(
 			<div className='container-fluid'>
 				<div className='page-header col-xs-12 col-sm-10 col-sm-offset-1'>
@@ -51,15 +74,15 @@ class Home extends Component{
 					<Table striped bordered condensed hover>
 						<thead className='font-weight-bold'>
 							<tr>
-								<th>Name</th>
-								<th>ID</th>
-								<th>Supervisor</th>
-								<th>Phone</th>
-								<th>Delete</th>
+								<th className='text-center'>Name</th>
+								<th className='text-center'>ID</th>
+								<th className='text-center'>Supervisor</th>
+								<th className='text-center'>Phone</th>
+								<th className='text-center'>Delete</th>
 							</tr>
 						</thead>
-						<tbody>
-							
+						<tbody className='text-center'>
+							{tableRows}
 						</tbody>
 					</Table>
 				</div>
