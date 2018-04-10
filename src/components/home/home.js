@@ -1,8 +1,10 @@
 import React, {Component} from 'react';
 import axios from 'axios';
-import {PageHeader, Table, FormControl, FormGroup, Button, Glyphicon} from 'react-bootstrap';
+import {PageHeader, Table, FormControl, FormGroup, Button, Glyphicon, Modal} from 'react-bootstrap';
 
+import './home.css';
 import DataTable from './dataTable';
+import SearchModal from './searchModal';
 
 class Home extends Component{
 	constructor(props){
@@ -13,7 +15,8 @@ class Home extends Component{
 			empId: '',
 			empPhone: '',
 			empSuper: '',
-			addError: false
+			addError: false,
+			modalShow: false
 		};
 		this.getEmployeeData = this.getEmployeeData.bind(this);
 		this.dataConvert = this.dataConvert.bind(this);
@@ -24,12 +27,19 @@ class Home extends Component{
 		this.empSuperInput = this.empSuperInput.bind(this);
 		this.handleEmpAdd = this.handleEmpAdd.bind(this);
 		this.clearInput = this.clearInput.bind(this);
+		this.showModal = this.showModal.bind(this);
+		this.closeModal = this.closeModal.bind(this);
 	}
 
 	componentDidMount(){
 		this.getEmployeeData();
 	}
-
+	showModal(){
+		this.setState({modalShow:true});
+	}
+	closeModal(){
+		this.setState({modalShow:false});
+	}
 	getEmployeeData(){
 		const apiURL = 'http://localhost:8080/HouseCoffee/get_all';
 		const request = axios.get(apiURL)
@@ -179,12 +189,18 @@ class Home extends Component{
 								onChange={this.empSuperInput}
 							/>
 						</FormGroup>
-						<Button className='btn-success btn-block' onClick={this.handleEmpAdd}>
+						<Button className='btn-success btn-block empAddBtn' onClick={this.handleEmpAdd}>
 							Add 
 						</Button>
 						<span className={`${addError ? 'show':'hidden'} text-danger`}>
 							Fill in all fields!
 						</span>
+						<Button className='btn-primary btn-block' onClick={this.getEmployeeData}>
+							Load All
+						</Button>
+						<Button className='btn-info btn-block' onClick={this.showModal}>
+							Search
+						</Button>
 					</form>
 				</div>
 
@@ -204,7 +220,15 @@ class Home extends Component{
 						</tbody>
 					</Table>
 				</div>
+				<Modal show={this.state.modalShow} onHide={this.closeModal}>
+					<Modal.Header closeButton>
+						<Modal.Title>Search Employee</Modal.Title>
+						<Modal.Body>
+							<SearchModal convertData={this.dataConvert} setData={this.setDataState} closeModal={this.closeModal}/>
+						</Modal.Body>
+					</Modal.Header>
 
+				</Modal>
 			</div>
 		)
 	}
