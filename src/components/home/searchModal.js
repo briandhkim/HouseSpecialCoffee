@@ -8,7 +8,8 @@ class SearchModal extends Component{
 		this.state={
 			firstName: '',
 			lastName: '',
-			empId: ''
+			empId: '',
+			noResult: false
 		}
 		this.firstNameInput = this.firstNameInput.bind(this);
 		this.lastNameInput = this.lastNameInput.bind(this);
@@ -17,26 +18,36 @@ class SearchModal extends Component{
 		this.searchById = this.searchById.bind(this);
 		this.searchByFirstName = this.searchByFirstName.bind(this);
 		this.searchByLastName = this.searchByLastName.bind(this);
+		this.displayResults = this.displayResults.bind(this);
+		this.displayNoResult = this.displayNoResult.bind(this);
 	}
 	firstNameInput(e){
 		this.setState({
-			firstName: e.target.value
+			firstName: e.target.value,
+			noResult : false
 		});
 	}
 	lastNameInput(e){
 		this.setState({
-			lastName: e.target.value
+			lastName: e.target.value,
+			noResult : false
 		});
 	}
 	idInput(e){
 		this.setState({
-			empId: e.target.value
+			empId: e.target.value,
+			noResult : false
 		});
 	}
 	searchPerson(){
-		// this.searchById();
-		// this.searchByFirstName();
-		this.searchByLastName();
+		const {firstName, lastName, empId} = this.state;
+		if(firstName.length){
+			this.searchByFirstName();
+		}else if(lastName.length){
+			this.searchByLastName();
+		}else if(empId.length){
+			this.searchById();
+		}
 	}
 	searchById(){
 		const {empId} = this.state;
@@ -46,7 +57,11 @@ class SearchModal extends Component{
 			url: idSearchURL
 		})
 			.then((res)=>{
-				console.log(res);
+				if(res.data.length){
+					this.displayResults(res.data);
+				}else{
+					this.displayNoResult();
+				}
 			})
 			.catch((err)=>{
 				console.log(err);
@@ -61,7 +76,11 @@ class SearchModal extends Component{
 			url: searchURL
 		})
 			.then((res)=>{
-				console.log(res);
+				if(res.data.length){
+					this.displayResults(res.data);
+				}else{
+					this.displayNoResult();
+				}
 			})
 			.catch((err)=>{
 				console.log(err);
@@ -74,13 +93,32 @@ class SearchModal extends Component{
 			method: 'GET',
 			url: searchURL
 		}).then((res)=>{
-			console.log(res);
+			if(res.data.length){
+				this.displayResults(res.data);
+			}else{
+				this.displayNoResult();
+			}
 		}).catch((err=>{
 			console.log(err);
 		}))
 	}
+	displayResults(dataStr){
+		const {convertData, setData, closeModal} = this.props;
+		const dataArr =	convertData(dataStr);
+		setData(dataArr);
+		closeModal();
+	}
+	displayNoResult(){
+		this.setState({
+			firstName: '',
+			lastName: '',
+			empId: '',
+			noResult: true
+		});
+	}
 
 	render(){
+		const {noResult} = this.state;
 		return(
 			<div className='form-horizontal'>
 				<form>
@@ -121,6 +159,9 @@ class SearchModal extends Component{
 					<Button className='btn-block btn-info' onClick={this.searchPerson}>
 						Search
 					</Button>
+					<span className={`text-danger ${noResult ? 'show' : 'hidden'}`}>
+						<h4>No results found</h4>
+					</span>
 				</form>
 			</div>
 		)

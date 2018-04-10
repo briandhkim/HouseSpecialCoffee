@@ -17,8 +17,7 @@ const TableRow = (props) =>{
 		}).then((res)=>{
 				console.log(res);
 				refreshData();
-			})
-			.catach((err)=>{
+			}).catch((err)=>{
 				console.log(err);
 			})
 	};
