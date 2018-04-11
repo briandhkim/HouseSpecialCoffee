@@ -44,12 +44,8 @@ class Home extends Component{
 		const apiURL = 'http://localhost:8080/HouseCoffee/get_all';
 		const request = axios.get(apiURL)
 			.then((res)=>{
-				// const dataStr = res.data;
-				// const qChange = dataStr.replace(/'/g,'"');
-				// const dataArr = JSON.parse(qChange);
 				const dataArr = this.dataConvert(res.data);
 				this.setDataState(dataArr);
-				// console.log(dataArr, typeof dataArr);
 			})
 			.catch((err)=>{
 				console.log(err);
