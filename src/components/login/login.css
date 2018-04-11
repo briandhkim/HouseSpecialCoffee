@@ -1,5 +1,10 @@
 .well{
 	margin-top: 35%;
+	font-family: 'Inconsolata', monospace;
+}
+
+.well .label{
+	font-weight: 500;
 }
 
 .label{

@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import axios from 'axios';
-import {PageHeader, Table, FormControl, FormGroup, Button, Glyphicon, Modal} from 'react-bootstrap';
-
+import {PageHeader, Table, FormControl, FormGroup, Button, Glyphicon, Modal, Label, Popover, OverlayTrigger} from 'react-bootstrap';
+import $ from 'jquery';
 import './home.css';
 import DataTable from './dataTable';
 import SearchModal from './searchModal';
@@ -29,6 +29,7 @@ class Home extends Component{
 		this.clearInput = this.clearInput.bind(this);
 		this.showModal = this.showModal.bind(this);
 		this.closeModal = this.closeModal.bind(this);
+		this.downloadCSV = this.downloadCSV.bind(this);
 	}
 
 	componentDidMount(){
@@ -94,6 +95,27 @@ class Home extends Component{
 			empSuper: ''
 		});
 	}
+	downloadCSV(){
+		const {empData} = this.state;
+		let data = [["Name","ID","Phone","Supervisor"]];
+		empData.map((emp, idx)=>{
+			data.push(emp);
+		});
+		let csvContent = "data:text/csv;charset=utf-8,";
+		data.forEach((row)=>{
+			let emp = row.join(",");
+			csvContent += emp+"\n";
+		});
+		var encodeUri = encodeURI(csvContent);
+		let linkElmt = $('<a>',{
+			class: 'csvLink',
+			href: encodeUri,
+			download: "employee_data.csv"
+		}).appendTo('body');
+		$('.csvLink')[0].click();
+		$('.csvLink').remove();
+		
+	}
 	handleEmpAdd(e){
 		e.preventDefault();
 		const {empName, empId, empPhone, empSuper} = this.state;
@@ -120,21 +142,35 @@ class Home extends Component{
 
 	render(){
 		const dataArr = this.state.empData;
+		// console.log(dataArr);
 		const {addError} = this.state;
 		const tableRows = dataArr ? dataArr.map((emp, index)=>{
 			return <DataTable key={index} index={index} employee={emp} refreshData={this.getEmployeeData} />
 		}):<tr></tr>;
+		const csvPopover = (
+			<Popover id="popover-trigger-hover-focus">
+				download as CSV
+			</Popover>
+		);
 
 		return(
 			<div className='container-fluid'>
 				<div className='page-header col-xs-12 col-sm-10 col-sm-offset-1'>
 					<h1 className='hidden-xs h1-responsive'>
 						<strong>Employee Table</strong>
-						<small className='pull-right'>Paddy's Pub</small>
+						<small>
+							<Label>
+								Paddy's Pub
+							</Label>
+						</small>
 					</h1>
 					<h3 className='visible-xs h3-responsive'>
 						<strong>Employee Table</strong>
-						<small className='pull-right'>Paddy's Pub</small>
+						<small>
+							<Label>
+								Paddy's Pub
+							</Label>	
+						</small>
 					</h3>
 				</div>
 
@@ -197,13 +233,18 @@ class Home extends Component{
 						<Button className='btn-info btn-block' onClick={this.showModal}>
 							Search
 						</Button>
+						<OverlayTrigger trigger={['hover','focus']} placement="left" overlay={csvPopover}>
+							<Button className='label-default pull-right' onClick={this.downloadCSV}>
+								<Glyphicon glyph='download-alt' />
+							</Button>
+						</OverlayTrigger>
 					</form>
 				</div>
 
 				<div className='col-sm-8 col-sm-pull-1 table-responsive'>
 					<Table striped bordered condensed hover>
 						<thead className='font-weight-bold'>
-							<tr>
+							<tr className='warning'>
 								<th className='text-center'>Name</th>
 								<th className='text-center'>ID</th>
 								<th className='text-center'>Supervisor</th>
