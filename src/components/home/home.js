@@ -234,7 +234,7 @@ class Home extends Component{
 							Search
 						</Button>
 						<OverlayTrigger trigger={['hover','focus']} placement="left" overlay={csvPopover}>
-							<Button className='label-default pull-right' onClick={this.downloadCSV}>
+							<Button className='label-default pull-right csvBtn' onClick={this.downloadCSV}>
 								<Glyphicon glyph='download-alt' />
 							</Button>
 						</OverlayTrigger>

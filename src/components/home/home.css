@@ -3,7 +3,7 @@ font-family: 'Inconsolata', monospace;
 font-family: 'IM Fell Double Pica', serif;
 */
 
-.empAddBtn, .btn-block{
+.empAddBtn, .btn-block, .csvBtn{
 	margin-bottom: 15px;
 }
 
